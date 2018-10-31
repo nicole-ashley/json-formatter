@@ -134,6 +134,10 @@ function ready() {
 }
 
 function getTextFromTextOnlyDocument() {
+  if (!document.body) {
+    return;
+  }
+  
   const bodyChildren = document.body.childNodes;
   const firstChild = bodyChildren[0];
 
