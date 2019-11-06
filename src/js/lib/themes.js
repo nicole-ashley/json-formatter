@@ -57,7 +57,7 @@ export const themes = {
     type: 'Light'
   },
   xcode: {
-    name: 'XCode',
+    name: 'Xcode',
     type: 'Light'
   },
   ambiance: {
