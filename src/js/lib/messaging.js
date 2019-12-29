@@ -5,7 +5,7 @@ export function connect() {
 }
 
 export function listen(onMessageReceived) {
-  browser.runtime.onConnect.addListener((port) => {
+  browser.runtime.onConnect.addListener(port => {
     if (port.name !== 'jf') {
       console.log(`JSON Formatter error - unknown port name ${port.name}`, port);
       return;

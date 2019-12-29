@@ -1,12 +1,12 @@
 import {themes} from './themes';
-import {connect} from "./messaging";
+import {connect} from './messaging';
 
 const transitionStyles = require('../../sass/transition.scss');
 let port, transitionStylesInject;
 
 export function enableTheming() {
   port = connect();
-  port.onMessage.addListener((message) => {
+  port.onMessage.addListener(message => {
     if (message.type === 'STORED THEME') {
       switchToTheme(message.themeName);
     }
@@ -55,9 +55,9 @@ function generateOptionsHTML() {
   const nestedThemes = getThemesNestedByType();
 
   return Object.keys(nestedThemes)
-    .map((groupName) => {
+    .map(groupName => {
       const themeGroup = nestedThemes[groupName];
-      const groupOptions = Object.keys(themeGroup).map((key) => {
+      const groupOptions = Object.keys(themeGroup).map(key => {
         const theme = themeGroup[key];
         return `<option value="${key}">${theme.name}</option>`;
       }).join('');

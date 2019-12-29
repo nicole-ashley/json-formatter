@@ -1,11 +1,9 @@
-import { connect } from './lib/messaging';
-import { enableTheming } from './lib/theme-switcher';
-import browser from "./lib/browser";
+import {connect} from './lib/messaging';
+import {enableTheming} from './lib/theme-switcher';
 
 let jfContent;
 let jfTable;
 let pre;
-let jfStyleEl;
 let slowAnalysisTimeout;
 
 // Open the port 'jf' now, ready for when we need it
@@ -14,11 +12,12 @@ const port = connect();
 // Add listener to receive response from BG when ready
 port.onMessage.addListener(function(message) {
   switch (message[0]) {
-    case 'NOT JSON' :
+    case 'NOT JSON' : {
       document.documentElement.style.color = null;
       break;
+    }
 
-    case 'FORMATTING' :
+    case 'FORMATTING' : {
       convertPlainTextDocumentToPreIfNeeded();
       if (!pre) {
         pre = document.querySelector('body > pre');
@@ -55,8 +54,9 @@ port.onMessage.addListener(function(message) {
       insertFormatOptionBar(message[1]);
 
       break;
+    }
 
-    case 'FORMATTED' :
+    case 'FORMATTED' : {
       // Insert HTML content
       jfContent.innerHTML = message[1];
       pre.hidden = true;
@@ -76,20 +76,23 @@ port.onMessage.addListener(function(message) {
       document.addEventListener('click', generalClick, false);
 
       break;
+    }
 
-    case 'FORMATTING TABLE' :
+    case 'FORMATTING TABLE' : {
       // Table view element (if/when table view is requested)
       jfTable.innerHTML = '<p id="formattingMsg"><svg id="spinner" width="16" height="16" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" version="1.1"><path d="M 150,0 a 150,150 0 0,1 106.066,256.066 l -35.355,-35.355 a -100,-100 0 0,0 -70.711,-170.711 z" fill="#3d7fe6"></path></svg> Formatting...</p>';
 
 
       break;
+    }
 
-    case 'FORMATTED TABLE' :
+    case 'FORMATTED TABLE' : {
       // Insert HTML content
       const html = message[1];
-      jfTable.innerHTML = html
+      jfTable.innerHTML = html;
 
       break;
+    }
 
     default :
       throw new Error(`Message not understood: ${message[0]}`);
@@ -148,17 +151,15 @@ function insertFormatOptionBar(isArray) {
 
     _showView(buttonTable);
   });
- // buttonTable.disabled = true;  // Disabled by default, until we know we're dealing with an array
+  // buttonTable.disabled = true;  // Disabled by default, until we know we're dealing with an array
 
   document.addEventListener('keyup', function(e) {
     if (e.keyCode === 37 && typeof buttonPlain !== 'undefined') {
       buttonPlain.click();
-    }
-    else if (e.keyCode === 39 && typeof buttonFormatted !== 'undefined') {
+    } else if (e.keyCode === 39 && typeof buttonFormatted !== 'undefined') {
       buttonFormatted.click();
-    }
-    // How do these hotkeys work?
-    else if (e.keyCode === 40 && typeof buttonTable !== 'undefined') {
+    } else if (e.keyCode === 40 && typeof buttonTable !== 'undefined') {
+      // Not really sure how these hotkeys work
       buttonTable.click();
     }
   });
@@ -173,15 +174,15 @@ function ready() {
   // First, check if it's plain text and exit if not
   const plainText = getTextFromTextOnlyDocument();
   if (typeof(plainText) == 'undefined')
-  if (!plainText || plainText.length > 3000000) {
+    if (!plainText || plainText.length > 3000000) {
     // If there is plain text and it's over 3MB, show alert
     // (TODO: Display in-page message of some sort instead of an alert().
     // alert() blocks event loop and prevents user from interacting with page,
     // which is super-annoying.)
-    plainText && alert('JSON Formatter Error: Cannot parse JSON larger than 3MB');
-    port.disconnect();
-    return;
-  }
+      plainText && alert('JSON Formatter Error: Cannot parse JSON larger than 3MB');
+      port.disconnect();
+      return;
+    }
 
   // Hide the text immediately (until we know what to do, to prevent a flash of unstyled content)
   document.documentElement.style.color = 'transparent';
@@ -207,7 +208,7 @@ function getTextFromTextOnlyDocument() {
     const isPlainText = isPlainTextElement(firstChild);
 
     if (bodyHasOnlyOneElement && (isPre || isPlainText)) {
-      _plainText = firstChild.innerText || firstChild.nodeValue
+      _plainText = firstChild.innerText || firstChild.nodeValue;
     }
 
     // Set to null to indicate we didn't find text
@@ -350,7 +351,7 @@ function generalClick(ev) {
       // Now change the scrollTop back to what it was
       document.body.scrollTop = scrollTop;
 
-      return;
+
     }
   }
 }

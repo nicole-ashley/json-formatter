@@ -1,5 +1,3 @@
-'use strict';
-
 export function removeComments(str) {
   str = `__${str}__`.split('');
 
@@ -21,7 +19,7 @@ export function removeComments(str) {
     }
 
     if (mode.singleQuote) {
-      if (str[i] === "'" && str[i - 1] !== '\\') {
+      if (str[i] === '\'' && str[i - 1] !== '\\') {
         mode.singleQuote = false;
       }
       continue;
@@ -59,7 +57,7 @@ export function removeComments(str) {
     }
 
     mode.doubleQuote = str[i] === '"';
-    mode.singleQuote = str[i] === "'";
+    mode.singleQuote = str[i] === '\'';
 
     if (str[i] === '/') {
       if (str[i + 1] === '*' && str[i + 2] === '@') {

@@ -1,6 +1,4 @@
-'use strict';
-
-import { createSpan, Templates } from './template';
+import {createSpan, Templates} from './template';
 import JsonTokenizer from 'json-tokenizer';
 
 let lineNumber;
@@ -8,7 +6,7 @@ let lineNumber;
 export function jsonStringToHTML(jsonString, jsonpFunctionName) {
   lineNumber = jsonpFunctionName === null ? 1 : 2;
   return tokenize(jsonString)
-    .then((rootKeyValueOrValue) => {
+    .then(rootKeyValueOrValue => {
       const gutterWidth = 1 + (lineNumber.toString().length * 0.5) + 'rem';
       const gutter = document.createElement('div');
       gutter.id = 'gutter';
@@ -40,7 +38,7 @@ function tokenize(jsonString) {
   currentNode.classList.add('rootKeyValueOrValue');
 
   const tokenizer = new JsonTokenizer();
-  tokenizer.on('data', (token) => {
+  tokenizer.on('data', token => {
     if (currentNode.tokenType === 'array') {
       const keyValueOrValue = templates.keyValueOrValue();
       keyValueOrValue.classList.add('arrayElement');
@@ -50,18 +48,20 @@ function tokenize(jsonString) {
     }
 
     switch (token.type) {
-      case 'comma':
+      case 'comma': {
         currentNode.appendChild(templates.commaText());
         if (currentNode.classList.contains('keyValueOrValue')) {
           currentNode = currentNode.parentNode;
         }
         break;
+      }
 
-      case 'end-label':
+      case 'end-label': {
         currentNode.appendChild(templates.colonAndSpace());
         break;
+      }
 
-      case 'begin-object':
+      case 'begin-object': {
         if (!currentNode.classList.contains('objectProperty')) {
           currentNode.setAttribute('line-number', lineNumber++);
         }
@@ -76,8 +76,9 @@ function tokenize(jsonString) {
         currentNode.appendChild(objectInner);
         currentNode = objectInner;
         break;
+      }
 
-      case 'end-object':
+      case 'end-object': {
         if (currentNode.classList.contains('objectProperty')) {
           currentNode = currentNode.parentNode;
         }
@@ -96,8 +97,9 @@ function tokenize(jsonString) {
           currentNode.parentNode.querySelector('.ellipsis').remove();
         }
         break;
+      }
 
-      case 'begin-array':
+      case 'begin-array': {
         if (!currentNode.classList.contains('objectProperty')) {
           currentNode.setAttribute('line-number', lineNumber++);
         }
@@ -112,8 +114,9 @@ function tokenize(jsonString) {
         currentNode.appendChild(arrayInner);
         currentNode = arrayInner;
         break;
+      }
 
-      case 'end-array':
+      case 'end-array': {
         if (currentNode.classList.contains('arrayElement')) {
           currentNode = currentNode.parentNode;
         }
@@ -132,9 +135,10 @@ function tokenize(jsonString) {
           currentNode.parentNode.querySelector('.ellipsis').remove();
         }
         break;
+      }
 
       case 'string':
-      case 'maybe-string':
+      case 'maybe-string': {
         if (currentNode.tokenType === 'object') {
           const keyValueOrValue = templates.keyValueOrValue();
           keyValueOrValue.setAttribute('line-number', lineNumber++);
@@ -169,38 +173,43 @@ function tokenize(jsonString) {
           currentNode.appendChild(valueElement);
         }
         break;
+      }
 
-      case 'null':
+      case 'null': {
         currentNode.appendChild(templates.null());
         break;
+      }
 
-      case 'boolean':
+      case 'boolean': {
         const boolean = templates.boolean();
         boolean.innerText = token.content;
         currentNode.appendChild(boolean);
         break;
+      }
 
       case 'number':
       case 'maybe-decimal-number':
       case 'maybe-negative-number':
       case 'maybe-exponential-number':
-      case 'maybe-exponential-number-negative':
+      case 'maybe-exponential-number-negative': {
         const numberElement = templates.number();
         numberElement.innerText = token.content;
         currentNode.appendChild(numberElement);
         break;
+      }
 
-      case 'symbol':
+      case 'symbol': {
         const symbolElement = templates.createSpan();
         symbolElement.innerText = token.content;
         currentNode.appendChild(symbolElement);
         break;
+      }
     }
   });
 
   tokenizer.end(jsonString);
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     tokenizer.on('end', () => resolve(currentNode));
   });
 }
@@ -240,10 +249,10 @@ function _renderCell(content, cellTag = 'td') {
     cell.innerHTML = '&mdash;';
     return cell;
   }
-  if (Array.isArray(content)) return $(cellTag, 'deep', 'array')
-  if (content.constructor === Object) return $(cellTag, 'deep', 'object')
+  if (Array.isArray(content)) return $(cellTag, 'deep', 'array');
+  if (content.constructor === Object) return $(cellTag, 'deep', 'object');
 
-  let type = typeof(content);
+  const type = typeof(content);
   if (type == 'boolean') return $(cellTag, 'bool', content ? 'true' : 'false');
   if (type == 'string') return $(cellTag, 'string', content);
   if (type == 'number') return $(cellTag, 'number', content);

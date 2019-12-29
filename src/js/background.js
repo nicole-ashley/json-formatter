@@ -1,9 +1,7 @@
-'use strict';
-
 import browser from './lib/browser';
-import { listen } from './lib/messaging';
-import { removeComments, firstJSONCharIndex } from './lib/utilities';
-import { jsonStringToHTML, renderArrayAsTable } from './lib/dom-builder';
+import {listen} from './lib/messaging';
+import {removeComments, firstJSONCharIndex} from './lib/utilities';
+import {jsonStringToHTML, renderArrayAsTable} from './lib/dom-builder';
 
 // Record current version (in case a future update wants to know)
 browser.storage.local.set({appVersion: browser.runtime.getManifest().version});
@@ -31,7 +29,7 @@ function extractJSON(text) {
 
     // Get the substring up to the first "(", with any comments/whitespace stripped out
     const firstBit = removeComments(text.substring(0, indexOfParen)).trim();
-    if (!firstBit.match(/^[a-zA-Z_$][\.\[\]'"0-9a-zA-Z_$]*$/)) {
+    if (!firstBit.match(/^[a-zA-Z_$][.[\]'"0-9a-zA-Z_$]*$/)) {
       // The 'firstBit' is NOT a valid function identifier.
       throw Error('first bit not a valid function name');
     }
@@ -44,7 +42,7 @@ function extractJSON(text) {
 
     // Check that what's after the last parenthesis is just whitespace, comments, and possibly a semicolon (exit if anything else)
     const lastBit = removeComments(text.substring(indexOfLastParen + 1)).trim();
-    if (lastBit !== "" && lastBit !== ';') {
+    if (lastBit !== '' && lastBit !== ';') {
       throw Error('last closing paren followed by invalid characters');
     }
 
@@ -54,8 +52,7 @@ function extractJSON(text) {
     try {
       obj = JSON.parse(text);
       validJsonText = text;
-    }
-    catch (e2) {
+    } catch (e2) {
       // Just some other text that happens to be in a function call.
       // Respond as not JSON, and exit
       throw Error('looks like a function call, but the parameter is not valid JSON');
@@ -112,15 +109,15 @@ listen((port, msg) => {
       return;
     }
 
-    const {obj, validJsonText, jsonpFunctionName} = extracted;
+    const {obj} = extracted;
     port.postMessage(['FORMATTING TABLE']);
 
     // Do formatting
     const html = renderArrayAsTable(obj);
     port.postMessage(['FORMATTED TABLE', html]);
   } else if (msg.type === 'GET STORED THEME') {
-    browser.storage.sync.get('theme', (data) => {
-      port.postMessage({type: 'STORED THEME', themeName: data && data.theme})
+    browser.storage.sync.get('theme', data => {
+      port.postMessage({type: 'STORED THEME', themeName: data && data.theme});
     });
   } else if (msg.type === 'UPDATE STORED THEME') {
     browser.storage.sync.set({theme: msg.theme}, () => {
