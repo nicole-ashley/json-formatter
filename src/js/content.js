@@ -152,20 +152,22 @@ function insertFormatOptionBar(isArray) {
     _showView(buttonTable);
   });
 
-  document.addEventListener('keyup', function(e) {
-    if (e.keyCode === 37 && typeof buttonPlain !== 'undefined') {
-      buttonPlain.click();
-    } else if (e.keyCode === 39 && typeof buttonFormatted !== 'undefined') {
-      buttonFormatted.click();
-    } else if (e.keyCode === 40 && typeof buttonTable !== 'undefined') {
-      // Not really sure how these hotkeys work
-      buttonTable.click();
+  // Keyboard shortcuts (\u20E3 is unicode to add key outline)
+  buttonPlain.title = 'Shift + R\u20E3';
+  buttonFormatted.title = 'Shift+P\u20E3';
+  buttonTable.title = 'Shift+T\u20E3';
+  document.addEventListener('keypress', function(e) {
+    switch (e.key) {
+      case 'R': buttonPlain.click(); break;
+      case 'P': buttonFormatted.click(); break;
+      case 'T': buttonTable.click(); break;
     }
   });
 
   formatBar.appendChild(buttonPlain);
   formatBar.appendChild(buttonFormatted);
   formatBar.appendChild(buttonTable);
+
   document.body.append(formatBar);
 }
 
