@@ -151,7 +151,6 @@ function insertFormatOptionBar(isArray) {
 
     _showView(buttonTable);
   });
-  // buttonTable.disabled = true;  // Disabled by default, until we know we're dealing with an array
 
   document.addEventListener('keyup', function(e) {
     if (e.keyCode === 37 && typeof buttonPlain !== 'undefined') {
