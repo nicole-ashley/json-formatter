@@ -35,23 +35,23 @@ gulp.task('scripts', () => {
     .pipe(gulp.dest(`${BUILD_DIR}/js`));
 });
 
-gulp.task('scripts:dist', ['scripts'], () => {
+gulp.task('scripts:dist', gulp.series('scripts', () => {
   return gulp.src(`${BUILD_DIR}/js/**/*.js`)
     .pipe(uglify())
     .pipe(headerLicense('/* ' + fs.readFileSync('./LICENSE') + '*/'))
     .pipe(gulp.dest(`${BUILD_DIR}/js`));
-});
+}));
 
-gulp.task('build', ['configs', 'icons', 'scripts']);
-gulp.task('build:dist', ['configs', 'icons', 'scripts:dist']);
+gulp.task('build', gulp.series('configs', 'icons', 'scripts'));
+gulp.task('build:dist', gulp.series('configs', 'icons', 'scripts:dist'));
 
-gulp.task('release', ['build:dist'], () => {
+gulp.task('release', gulp.series('build:dist', () => {
   const manifest = require(`${BUILD_DIR}/manifest.json`);
   return gulp.src(`${BUILD_DIR}/**/*`)
     .pipe(zip(`json-formatter-${manifest.version}.zip`))
     .pipe(gulp.dest(RELEASE_DIR));
-});
+}));
 
-gulp.task('watch', ['build'], () => {
-  return gulp.watch(`${SRC_DIR}/**/*`, ['build']);
-});
+gulp.task('watch', gulp.series('build', () => {
+  return gulp.watch(`${SRC_DIR}/**/*`, gulp.series('build'));
+}));

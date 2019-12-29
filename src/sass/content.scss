@@ -1,9 +1,15 @@
 body {
   user-select: text;
-  overflow-x: hidden;
-  overflow-y: scroll !important;
   margin: 0;
-  position: relative;
+
+  &.view-plain, &.view-table {
+    padding-top: 2.25rem;
+  }
+
+  &.view-content {
+    overflow-x: hidden;
+    overflow-y: scroll !important;
+  }
 }
 
 #formatOptionBar {
@@ -17,7 +23,7 @@ body {
 .optionBar {
   user-select: none;
   display: block;
-  position: absolute;
+  position: fixed;
   top: 0.7rem;
   font: 13px "Lucida Grande", "Segoe UI", "Tahoma";
 
@@ -81,6 +87,10 @@ body {
     width: 5rem;
   }
 
+  button:disabled {
+    opacity: 0.5;
+  }
+
   select {
     width: 9.1rem;
 
@@ -112,7 +122,6 @@ body {
 
 pre {
   white-space: normal;
-  padding: 2.25rem 0.3rem 0.3rem;
 }
 
 .keyValueOrValue {
@@ -227,7 +236,7 @@ a:hover, a:active {
   display: none !important;
 }
 
-span {
+.jfContent span {
   white-space: pre-wrap;
 }
 
@@ -247,6 +256,55 @@ span {
 
 * {
   font-smoothing: antialiased;
+}
+
+/* Table view */
+#jfTable table {
+  border-collapse: collapse;
+
+  thead {
+    font-size: 0.85rem;
+    font-family: sans-serif;
+    th {
+      border-bottom: solid 2px rgba(127, 127, 127, .8);
+    }
+  }
+
+  tbody {font-family: monospace;}
+
+  td, th {
+    padding: 2px 4px;
+
+    white-space: nowrap;
+    max-width: 15rem;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+  }
+
+  tr > *:not(:first-child) { // vertical lines between cells
+    border-right: solid 1px rgba(127, 127, 127, .4);
+  }
+
+  td.deep, td.unexpected, td.undefined {
+    font-family: sans-serif;
+    font-size: 0.6rem;
+    color: rgba(127, 127, 127, .5);
+    font-style: italic;
+  }
+
+  tr > .number {
+    text-align: right;
+  }
+
+  tbody { // shade every other row
+    tr:nth-child(odd) {background: rgba(127,127,127, .15)}
+  }
+
+  tr *:first-child { // row index column
+    user-select: none;
+    text-align: right;
+    opacity: .5;
+  }
 }
 
 @import 'themes/all';

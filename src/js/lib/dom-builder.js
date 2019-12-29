@@ -204,3 +204,146 @@ function tokenize(jsonString) {
     tokenizer.on('end', () => resolve(currentNode));
   });
 }
+
+//
+// Table view rendering
+//
+
+// HTMLElement helper
+function $(tag, classname, content) {
+  // Make elementj
+  const el = document.createElement(tag);
+
+  // Set classname
+  if (tag && classname) el.classList.add(classname);
+
+  // Set content
+  if (content != null) {
+    if (Array.isArray(content)) {
+      for (const o of content) {
+        el.appendChild(o.nodeType ? o : document.createTextNode(o));
+      }
+    } else if (content.nodeType) {
+      el.appendChild(content);
+    } else {
+      el.innerText = content;
+    }
+  }
+
+  return el;
+}
+
+function _renderCell(content, cellTag = 'td') {
+  if (content === null) return $(cellTag, 'null', 'null');
+  if (content === undefined) {
+    const cell = $(cellTag, 'undefined');
+    cell.innerHTML = '&mdash;';
+    return cell;
+  }
+  if (Array.isArray(content)) return $(cellTag, 'deep', 'array')
+  if (content.constructor === Object) return $(cellTag, 'deep', 'object')
+
+  let type = typeof(content);
+  if (type == 'boolean') return $(cellTag, 'bool', content ? 'true' : 'false');
+  if (type == 'string') return $(cellTag, 'string', content);
+  if (type == 'number') return $(cellTag, 'number', content);
+
+  throw Error(`Unexpected type: ${type} (${content})`);
+}
+
+function _renderRow(arr, cellTag) {
+  const cells = [];
+  for (const v of arr) {
+    const cell = _renderCell(v, cellTag);
+    // Header cells get 'key' styling
+    if (cellTag == 'th') cell.className = 'key';
+    cells.push(cell);
+  }
+
+  return $('tr', null, cells);
+}
+
+export function renderArrayAsTable(arr) {
+  if (!Array.isArray(arr)) {
+    return `<div>JSON is not an Array</div>`;
+  }
+
+  // Gather all object keys
+  const keyIndex = new Map();
+  let maxIndex = 0;
+  let namedColumns = false;
+  for (const item of arr) {
+    if (!item || item.constructor !== Object) {
+      if (Array.isArray(item)) {
+        maxIndex = Math.max(maxIndex, item.length);
+      }
+      continue;
+    }
+    namedColumns = true;
+    for (const key in item) {
+      if (!keyIndex.has(key)) keyIndex.set(key, keyIndex.size);
+    }
+  }
+
+  // Create header cells
+  let header;
+  if (namedColumns) {
+    // Named column headers (object keys)
+    header = [...keyIndex.keys()];
+  } else {
+    // Indexed column headers (array indexes)
+    header = Array(maxIndex).fill().map((v, i) => i); // Array of indexes
+  }
+
+  header.unshift(''); // Header for row #
+  header = _renderRow(header, 'th');
+
+  const rows = arr.map((item, rowIndex) => {
+    let cells;
+
+    if (item && item.constructor === Object) {
+      // Item is Object: Put values in appropriate column
+      cells = [];
+      // Put object values in approriate column
+      for (const [k, v] of Object.entries(item)) {
+        cells[keyIndex.get(k)] = v;
+      }
+    } else if (Array.isArray(item)) {
+      // Item is Array
+      if (namedColumns) {
+        // Named columns: Can't meaningfully render
+        cells = $('td', 'unexpected', 'Unexpected array');
+      } else {
+        // Indexed columns: put values in each column
+        cells = item;
+        cells.length = maxIndex;
+      }
+    } else {
+      // Can't meaningfully render other values
+      cells = $('td', 'unexpected', 'Unexpected value');
+    }
+
+    if (Array.isArray(cells)) {
+      // Convert to table cells
+      cells = _renderRow(cells);
+
+      // Enable hover text
+      for (const c of cells.children) c.title = c.innerText;
+    } else { // String? hbhb
+      // Single cell? Means this is an error message of some sort, so span
+      // all columns and wrap in TR.
+      cells.setAttribute('colspan', header.children.length - 1);
+      cells = $('tr', null, cells);
+    }
+
+    // Prepend cell for row index
+    cells.insertBefore($('td', null, rowIndex), cells.firstChild);
+
+    return cells;
+  });
+
+  return $('table', null, [
+    $('thead', null, header),
+    $('tbody', null, rows)
+  ]).outerHTML;
+}

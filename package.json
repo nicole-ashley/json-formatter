@@ -5,6 +5,9 @@
   "repository": "git@github.com:nikrolls/json-formatter.git",
   "author": "Nik Rolls <nik@rolls.cc>",
   "license": "MIT",
+  "scripts": {
+    "watch": "nodemon -i build -x \"gulp build:dist\""
+  },
   "dependencies": {
     "autoprefixer": "^6.7.7",
     "babel-core": "^6.24.1",
@@ -13,7 +16,7 @@
     "css-loader": "^0.28.1",
     "cssnano": "^3.10.0",
     "del": "^2.2.2",
-    "gulp": "^3.9.1",
+    "gulp": "4.0.2",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-header-license": "^1.0.9",
     "gulp-sourcemaps": "^2.6.0",

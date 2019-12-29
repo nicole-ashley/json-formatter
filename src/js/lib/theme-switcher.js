@@ -32,7 +32,7 @@ function insertThemeOptionBar() {
 
   label.appendChild(select);
   themeBar.appendChild(label);
-  document.body.insertBefore(themeBar, document.body.childNodes[0]);
+  document.body.append(themeBar);
   port.postMessage({type: 'GET STORED THEME'});
 }
 

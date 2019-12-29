@@ -1,0 +1,15 @@
+[
+  "Some string",
+  {
+    "name": "Another string",
+    "size": 1447,
+    "url": "https://api.github.com/repos/highlightjs/highlight.js/contents/src/styles/a11y-dark.css?ref=master",
+    "type": "file",
+    "sub-object": {
+      "abc": "def",
+      "count": ""
+    }
+  },
+  [1,2,3],
+  123456
+]
