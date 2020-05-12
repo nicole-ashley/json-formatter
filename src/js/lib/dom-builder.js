@@ -157,6 +157,7 @@ function tokenize(jsonString) {
             const innerStringA = document.createElement('A');
             innerStringA.href = escapedValue;
             innerStringA.innerText = escapedValue;
+            innerStringA.target = '_blank';
             innerStringEl.appendChild(innerStringA);
           } else {
             innerStringEl.innerText = escapedValue;
